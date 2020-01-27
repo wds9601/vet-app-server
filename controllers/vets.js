@@ -1,3 +1,5 @@
+let router = require('express').Router()
+
 // Display all vets
 router.get('/', (req, res) => {
     res.send('Display all vets')
@@ -7,3 +9,5 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
     res.send('Display one vet details')
 })
+
+module.exports = router
