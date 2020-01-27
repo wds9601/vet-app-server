@@ -24,12 +24,63 @@ router.get('/:id', (req, res) => {
 
 //TODO: PUT '/:id' to edit pet data for one pet
 router.put('/:id', (req, res) => {
-    res.send('PUT route to edit pet data form')
+
+
+
+    // res.send('PUT route to edit pet data form')
 })
 
 //TODO: POST '/' create new pet from form (include image)
 router.post('/', (req, res) => {
-    res.send('POST route to add "new pet from" to db')
+    db.User.findById(req.params.id)
+    .then(User => {
+        User.pets.push({
+            name: req.body.name,
+            typeOfAnimal: req.body.typeOfAnimal,
+            breed: req.body.breed,
+            age: req.body.age,
+            sex: req.body.sex,
+            image: req.body.image,
+            summary: {
+                rabiesShot: req.body.rabiesShot,
+                microchip: req.body.microchip
+            },
+            treatment: {
+                treatment: req.body.treatment,
+                treatmentDate: req.body.treatmentDate
+            }
+        })
+        User.save()
+    .then(newPet => {
+        res.redirect('/')
+    })
+    .catch(err => {
+        console.log(err, 'Error')
+    })
+    })
+
+//     name: {
+//         type: String,
+//         required: true
+//     },
+//     typeOfAnimal: {
+//         type: String,
+//         required: true
+//     },
+//     breed: {
+//         type: String,
+//         required: true
+//     },
+//     age: Number,
+//     sex: String,
+//     image: String,
+//     summary: summarySchema,
+//     treatment: treatmentSchema,
+//     vet: {type: mongoose.Schema.Types.ObjectId, ref: 'Vet'}
+//   })
+
+
+    res.send(req.body)
 })
 
 //TODO: DELETE '/:id' delete a pet from a user's pet list
