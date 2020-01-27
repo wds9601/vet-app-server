@@ -1,6 +1,17 @@
 // Require mongoose node module
 const mongoose = require('mongoose')
 
+// Creating Summary model
+const summarySchema = new mongoose.Schema({
+    rabiesShot: String,
+})
+
+// Creating Treatment model
+const treatmentSchema = new mongoose.Schema({
+    treatment: String,
+    treatmentDate: Number
+})
+
 // Creating Pet model
 const petSchema = new mongoose.Schema({
     name: {
@@ -18,7 +29,9 @@ const petSchema = new mongoose.Schema({
     age: Number,
     sex: String,
     microchip: Number,
-    image: String
+    image: String,
+    summary: summarySchema,
+    treatment: treatmentSchema
 })
 
 // Exporting model
