@@ -6,6 +6,7 @@ let express = express()
 
 let db = require('../models')
 
+// // PETS
 //TODO: GET all pets '/' assoc with one user
 router.get('/', (req, res) => {
     res.send('GET all pets from a user')
@@ -35,5 +36,33 @@ router.post('/', (req, res) => {
 router.delete('/:id', (req, res) => {
     res.send('DELETE route for removing a pet from a user')
 })
+
+// // MEDICAL SUMMARY ROUTES
+router.get('/:id/medical', (req, res) => {
+    res.send('Medical records info for a single pet')
+})
+
+router.get('/:id/medical/:id', (req, res) => {
+    res.send('Display details of one medical record')
+})
+
+router.put('/:id/medical/:id', (req, res) => {
+    res.send('edit details of one medical record')
+})
+
+
+// // TREATMENT ROUTES
+router.get('/:id/treatment', (req, res) => {
+    res.send('Display deatils of a treatment')
+})
+
+router.get('/:id/treatment/new', (req, res) => {
+    res.send('Display form for editing one pet treatment')
+})
+
+router.post('/:id/treatment', (req, res) => {
+    res.send('Update pet treatment, redirect back to /:id/treatment')
+})
+
 
 module.exports = router
