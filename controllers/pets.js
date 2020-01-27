@@ -38,15 +38,35 @@ router.delete('/:id', (req, res) => {
 })
 
 // // MEDICAL SUMMARY ROUTES
+// Router to get the medical summary for a pet
 router.get('/:id/medical', (req, res) => {
-    res.send('Medical records info for a single pet')
+    db.User.findById(req.params.id)
+    .then(summary => {
+        console.log(user.pet.summary)
+        res.render('/:id/medical', { summary })
+    })
+    .catch(err => {
+        res.render('Error', err)
+    })
 })
 
+// Router to get a single record for a pet (Do we need?)
 router.get('/:id/medical/:id', (req, res) => {
     res.send('Display details of one medical record')
 })
 
 router.put('/:id/medical/:id', (req, res) => {
+    db.User.findOneAndUpdate({
+        _id: req.params.id
+    }, 
+        req.body,
+    {
+        new: true
+    })
+    .then(updatedSummary => {
+        console.log(updatedSummary)
+        res.redirect('/:id/medical/:id')
+    })
     res.send('edit details of one medical record')
 })
 
