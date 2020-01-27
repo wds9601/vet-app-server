@@ -50,7 +50,34 @@ router.put('/:id', (req, res) => {
 
 //POST '/' create new pet from form (include image)
 router.post('/', (req, res) => {
-    res.send('POST route to add "new pet from" to db')
+    // res.send('POST route to add "new pet from" to db')
+    router.post('/', (req, res) => {
+        db.User.findById(req.params.id)
+        .then(User => {
+            User.pets.push({
+                name: req.body.name,
+                typeOfAnimal: req.body.typeOfAnimal,
+                breed: req.body.breed,
+                age: req.body.age,
+                sex: req.body.sex,
+                image: req.body.image,
+                summary: {
+                    rabiesShot: req.body.rabiesShot,
+                    microchip: req.body.microchip
+                },
+                treatment: {
+                    treatment: req.body.treatment,
+                    treatmentDate: req.body.treatmentDate
+                }
+            })
+            User.save()
+        .then(newPet => {
+            res.redirect('/')
+        })
+        .catch(err => {
+            console.log(err, 'Error')
+        })
+    })
 })
 
 //DELETE '/:id' delete a pet from a user's pet list
