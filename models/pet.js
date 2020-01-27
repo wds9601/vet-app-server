@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 // Creating Summary model
 const summarySchema = new mongoose.Schema({
     rabiesShot: String,
+    microchip: Number
 })
 
 // Creating Treatment model
@@ -29,10 +30,10 @@ const petSchema = new mongoose.Schema({
     },
     age: Number,
     sex: String,
-    microchip: Number,
     image: String,
     summary: summarySchema,
-    treatment: treatmentSchema
+    treatment: treatmentSchema,
+    vet: {type: mongoose.Schema.Types.ObjectId, ref: 'Vet'}
 })
 
 // Exporting model
