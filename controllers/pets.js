@@ -59,12 +59,23 @@ router.delete('/:id', (req, res) => {
 })
 
 // // MEDICAL SUMMARY ROUTES
+
 // GET - All medical records for single pet
+
 router.get('/:id/medical', (req, res) => {
-    res.send('Medical records info for a single pet')
+    db.User.findById(req.params.id)
+    .then(summary => {
+        console.log(user.pet.summary)
+        res.render('/:id/medical', { summary })
+    })
+    .catch(err => {
+        console.log('error', err)
+        res.render('error')
+    })
 })
 
 // GET - pet's individual medical record details
+
 router.get('/:id/medical/:id', (req, res) => {
     res.send('Display details of one medical record')
 })
@@ -72,7 +83,21 @@ router.get('/:id/medical/:id', (req, res) => {
 
 // PUT - edit pet's indvidual medical record
 router.put('/:id/medical/:id', (req, res) => {
-    res.send('edit details of one medical record')
+    db.User.findOneAndUpdate({
+        _id: req.params.id
+    }, 
+        req.body,
+    {
+        new: true
+    })
+    .then(updatedSummary => {
+        console.log(updatedSummary)
+        res.redirect('/:id/medical/:id')
+    })
+    .catch(err => {
+        console.log('error', err)
+        res.render('error')
+    })
 })
 
 
