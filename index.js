@@ -26,6 +26,9 @@ app.use('/auth', expressJwt({
   ]
 }), require('./controllers/auth'))
 
+app.use('/pets', require('./controllers/pets'))
+app.use('/vets', require('./controllers/vets'))
+
 
 app.get('*', (req, res) => {
   res.status(404).send({ message: 'Not Found' })
