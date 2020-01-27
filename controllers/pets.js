@@ -1,3 +1,6 @@
+//TODO: 
+// add modules and dependencies
+
 //TODO: GET all pets '/' assoc with one user
 
 //TODO: GET '/new' form for adding new pet to a user
