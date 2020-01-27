@@ -46,7 +46,8 @@ router.get('/:id/medical', (req, res) => {
         res.render('/:id/medical', { summary })
     })
     .catch(err => {
-        res.render('Error', err)
+        console.log('error', err)
+        res.render('error')
     })
 })
 
@@ -67,7 +68,10 @@ router.put('/:id/medical/:id', (req, res) => {
         console.log(updatedSummary)
         res.redirect('/:id/medical/:id')
     })
-    res.send('edit details of one medical record')
+    .catch(err => {
+        console.log('error', err)
+        res.render('error')
+    })
 })
 
 

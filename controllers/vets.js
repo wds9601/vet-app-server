@@ -2,12 +2,27 @@ let router = require('express').Router()
 
 // Display all vets
 router.get('/', (req, res) => {
-    res.send('Display all vets')
+    db.Vet.find()
+    .then(vets => {
+        console.log(vets)
+        res.render('vets/index', { vets })
+    })
+    .catch(err => {
+        console.log('error', err)
+        res.render('error')
+    })
 })
 
 // display one vet
 router.get('/:id', (req, res) => {
-    res.send('Display one vet details')
+    db.Vet.findById(req.params.id)
+    .then(vet => {
+        res.render('vets/show', { vet })
+    })
+    .catch(err => {
+        console.log('error', err)
+        res.render('error')
+    })
 })
 
 module.exports = router
