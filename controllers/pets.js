@@ -49,10 +49,9 @@ router.put('/:id', (req, res) => {
 })
 
 //POST '/' create new pet from form (include image)
+// res.send('POST route to add "new pet from" to db')
 router.post('/', (req, res) => {
-    // res.send('POST route to add "new pet from" to db')
-    router.post('/', (req, res) => {
-        db.User.findById(req.params.id)
+    db.User.findById(req.params.id)
         .then(User => {
             User.pets.push({
                 name: req.body.name,
@@ -79,6 +78,7 @@ router.post('/', (req, res) => {
         })
     })
 })
+
 
 //DELETE '/:id' delete a pet from a user's pet list
 router.delete('/:id', (req, res) => {
@@ -145,6 +145,8 @@ router.post('/:id/treatment', (req, res) => {
 })
 
 // PUT - edit a pet treatment record that already exists
-router.put('/:id/treatment/')
+router.put('/:id/treatment/', (req, res)=> {
+
+})
 
 module.exports = router
