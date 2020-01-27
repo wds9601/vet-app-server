@@ -7,6 +7,7 @@ let morgan = require('morgan') //logs route that was accessed in browser in cons
 let rowdyLogger = require('rowdy-logger') //creates table of methods and routes in console
 
 // Instantiate app
+require('dotenv').config()
 let app = express()
 let rowdyResults = rowdyLogger.begin(app)
 
