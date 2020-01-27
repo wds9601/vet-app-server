@@ -57,7 +57,7 @@ router.post('/', (req, res) => {
     .catch(err => {
         console.log(err, 'Error')
     })
-    })
+})
 
 //     name: {
 //         type: String,
