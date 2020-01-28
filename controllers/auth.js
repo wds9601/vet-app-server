@@ -20,7 +20,7 @@ router.post('/login', (req, res) => {
     }
 
     //Good user - issue a token and send it
-    let token = jwt.sign(user.toJSON(), process.env.JWT_SECRET, {
+    let token = jwt.sign(user.toJSON(), 'HI', {
       expiresIn: 60 * 60 * 8 // 60 seconds
     })
     res.send({token})

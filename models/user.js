@@ -53,10 +53,10 @@ let userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 8,
-    maxlength: 32
+    maxlength: 100
   },
   profileUrl: String,
-  pet: petSchema,
+  pets: [petSchema],
   summary: summarySchema,
   treatment: treatmentSchema
 })
@@ -77,8 +77,12 @@ userSchema.set('toJSON', {
 })
 
 // Create a helper function to compare the password hashes
-userSchema.methods.isValidPassword = function (typedPassword) {
-  return bcrypt.compareSync(typedPassword, this.password)
-}
+userSchema.pre('save', function (next) {
+  if(!this.isModified()){
+    // New, as opposed to modified
+    this.password = bcrypt.hashSync(this.password, 12)
+  }
+  next()
+})
 
 module.exports = mongoose.model('User', userSchema)

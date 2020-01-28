@@ -9,9 +9,14 @@ let db = require('../models')
 //GET all pets '/' assoc with one user 
 router.get('/', (req, res) => {
     // res.send('GET all pets from a user')
-    db.User.findById(req.params.id)
+    // console.log('Line 12', req.user.id, req.user._id)
+    db.User.findById(req.user._id)
     .then((user) => {
-        let pets = user.pet
+        console.log('Line 15', user)
+        if (!user) {
+            return res.status(404).send({ message: 'No User' })
+        }
+        let pets = user.pets
         res.send(pets)
     })
     .catch(err => {
@@ -22,13 +27,13 @@ router.get('/', (req, res) => {
 
 //GET '/new' form for adding new pet to a user
 router.get('/new', (req, res) => {
-    res.send('GET new form for adding a new pet')
+    res.send('/new')
 })
 
 //GET '/:id' to view single pet by id
 router.get('/:id', (req, res) => {
     // res.send('GET info on a single pet')
-    db.User.findById(req.params.id)
+    db.User.findById(req.user._id)
     .then(user => {
         let pet = user.pet._id
         if(pet) {
@@ -51,8 +56,10 @@ router.put('/:id', (req, res) => {
 //POST '/' create new pet from form (include image)
 // res.send('POST route to add "new pet from" to db')
 router.post('/', (req, res) => {
-    db.User.findById(req.params.id)
+    console.log(req.user)
+    db.User.findById(req.user._id)
         .then(User => {
+            console.log(User)
             User.pets.push({
                 name: req.body.name,
                 typeOfAnimal: req.body.typeOfAnimal,
@@ -70,8 +77,8 @@ router.post('/', (req, res) => {
                 }
             })
             User.save()
-        .then(newPet => {
-            res.redirect('/')
+        .then(() => {
+            res.send({pets: User.pets})
         })
         .catch(err => {
             console.log(err, 'Error')
