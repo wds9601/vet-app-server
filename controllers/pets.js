@@ -97,10 +97,12 @@ router.delete('/:id', (req, res) => {
 // GET - All medical records for single pet
 
 router.get('/:id/medical', (req, res) => {
-    db.User.findById(req.params.id)
+    db.User.findById(req.user._id)
     .then(summary => {
-        console.log(user.pet.summary)
-        res.send(summary)
+        console.log('line 103', req.user)
+        let petSummary = User.pets.summary
+        console.log({pets: User.pets.summary})
+        res.send(petSummary)
     })
     .catch(err => {
         console.log('error', err)
@@ -138,7 +140,7 @@ router.put('/:id/medical/:id', (req, res) => {
 // // TREATMENT ROUTES
 // GET - All details of single treatment
 router.get('/:id/treatment', (req, res) => {
-    db.User.findById(req.params.id)
+    db.User.findById(req.user._id)
     .then(treatment => {
         console.log(User.pet.treatment)
         res.send(treatment)
