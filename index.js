@@ -18,7 +18,7 @@ app.use(express.json()) //Accept data from fetch (or any AJAX call)
 
 // Routes
 app.use('/auth', expressJwt({ 
-  secret: 'HI' //process.env.JWT_SECRET
+  secret: process.env.JWT_SECRET
 }).unless({  // w/o 'unless' function, the expressJWT would prevent public access to all routes in controller
   path: [
     {url: '/auth/login', methods: ['POST'] },
@@ -27,11 +27,11 @@ app.use('/auth', expressJwt({
 }), require('./controllers/auth'))
 
 app.use('/pets', expressJwt({ 
-  secret:'HI' //process.env.JWT_SECRET
+  secret: process.env.JWT_SECRET
 }), require('./controllers/pets'))
 
 app.use('/vets', expressJwt({ 
-  secret: 'HI' //process.env.JWT_SECRET
+  secret: process.env.JWT_SECRET
 }), require('./controllers/vets'))
 
 
