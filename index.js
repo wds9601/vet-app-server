@@ -7,7 +7,6 @@ let morgan = require('morgan') //logs route that was accessed in browser in cons
 let rowdyLogger = require('rowdy-logger') //creates table of methods and routes in console
 
 // Instantiate app
-require('dotenv').config()
 let app = express()
 let rowdyResults = rowdyLogger.begin(app)
 
@@ -19,7 +18,7 @@ app.use(express.json()) //Accept data from fetch (or any AJAX call)
 
 // Routes
 app.use('/auth', expressJwt({ 
-  secret: process.env.JWT_SECRET
+  secret: 'HI' //process.env.JWT_SECRET
 }).unless({  // w/o 'unless' function, the expressJWT would prevent public access to all routes in controller
   path: [
     {url: '/auth/login', methods: ['POST'] },
@@ -27,8 +26,13 @@ app.use('/auth', expressJwt({
   ]
 }), require('./controllers/auth'))
 
-app.use('/pets', require('./controllers/pets'))
-app.use('/vets', require('./controllers/vets'))
+app.use('/pets', expressJwt({ 
+  secret:'HI' //process.env.JWT_SECRET
+}), require('./controllers/pets'))
+
+app.use('/vets', expressJwt({ 
+  secret: 'HI' //process.env.JWT_SECRET
+}), require('./controllers/vets'))
 
 
 app.get('*', (req, res) => {
