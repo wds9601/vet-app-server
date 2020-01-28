@@ -28,11 +28,6 @@ router.get('/', (req, res) => {
     })
 })
 
-//GET '/new' form for adding new pet to a user
-router.get('/new', (req, res) => {
-    res.send('/new')
-})
-
 //GET '/:id' to view single pet by id
 router.get('/:id', (req, res) => {
     // res.send('GET info on a single pet')
