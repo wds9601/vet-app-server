@@ -71,7 +71,7 @@ router.post('/', (req, res) => {
             })
             User.save()
         .then(newPet => {
-            res.redirect('/')
+            res.redirect('/pets')
         })
         .catch(err => {
             console.log(err, 'Error')
@@ -93,7 +93,7 @@ router.get('/:id/medical', (req, res) => {
     db.User.findById(req.params.id)
     .then(summary => {
         console.log(user.pet.summary)
-        res.render('/:id/medical', { summary })
+        res.send(summary)
     })
     .catch(err => {
         console.log('error', err)
@@ -131,7 +131,11 @@ router.put('/:id/medical/:id', (req, res) => {
 // // TREATMENT ROUTES
 // GET - All details of single treatment
 router.get('/:id/treatment', (req, res) => {
-    res.send('Display details of a treatment')
+    db.User.findById(req.params.id)
+    .then(treatment => {
+        console.log(User.pet.treatment)
+        res.send(treatment)
+    })
 })
 
 // GET - display form for editing single pet treatment details
@@ -141,12 +145,37 @@ router.get('/:id/treatment/new', (req, res) => {
 
 // POST - create new pet treatment record
 router.post('/:id/treatment', (req, res) => {
-    res.send('Update pet treatment, redirect back to /:id/treatment')
+    db.User.create({
+        treatment: req.body.user.pet.treatment,
+        treatmentDate: req.body.user.pet.treatmentDate
+        .then(treatment => {
+            console.log(user.pet.treatment)
+            res.redirect('/:id/treatment')
+        })
+        .catch(err => {
+            console.log('error', err)
+            res.render('error')
+        })
+    })
 })
 
 // PUT - edit a pet treatment record that already exists
-router.put('/:id/treatment/', (req, res)=> {
-
+router.put('/:id/treatment', (req, res)=> {
+    db.User.findOneAndUpdate({
+        _id: req.params.id
+    },
+        req.body,
+    {
+        new: true
+    })
+    .then(updatedTreatment => {
+        res.redirect('/:id/treatment')
+    })
+    .catch(err => {
+        console.log('error', err)
+        res.render('error')
+    })
 })
+
 
 module.exports = router

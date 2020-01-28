@@ -56,9 +56,9 @@ let userSchema = new mongoose.Schema({
     maxlength: 32
   },
   profileUrl: String,
-  pet: petSchema,
+  pets: [petSchema],
   summary: summarySchema,
-  treatment: treatmentSchema
+  treatment: [{treatmentSchema}]
 })
 
 // Use bcrypt to hash password
