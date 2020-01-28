@@ -66,7 +66,7 @@ router.post('/', (req, res) => {
                 breed: req.body.breed,
                 age: req.body.age,
                 sex: req.body.sex,
-                image: req.body.image,
+                petImage: req.body.image,
                 summary: {
                     rabiesShot: req.body.rabiesShot,
                     microchip: req.body.microchip
