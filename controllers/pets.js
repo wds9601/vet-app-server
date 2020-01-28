@@ -29,31 +29,68 @@ router.get('/', (req, res) => {
 })
 
 //GET '/:id' to view single pet by id
+// router.get('/:id', (req, res) => {
+//     // res.send('GET info on a single pet')
+//     db.User.findById(req.user._id)
+//     .then(user => {
+//         // let newArr = user.pets.map(_id, req.user.pets._id)
+//         console.log('LINE 37', user.pets[0]._id)
+
+//         let pet = user.pets._id
+//         if(pet) {
+//             res.send(pet)
+//         }
+//         else {
+//             res.status(404).send('Resource not located')
+//         }
+        
+//     })
+//     .catch(err => {
+//         console.log('Error in GET single pet route', err)
+//     })
+// })
+
 router.get('/:id', (req, res) => {
-    // res.send('GET info on a single pet')
     db.User.findById(req.user._id)
     .then(user => {
-        let pet = user.pet._id
-        if(pet) {
-            res.send(pet)
+
+        //Null = falsey, on front end  --> if (goalPet)
+        let goalPet = null
+        for (let i = 0; i < user.pets.length; i++) {
+            if (user.pets[i]._id == req.params.id) {
+                goalPet = user.pets[i]
+            }
         }
-        else {
-            res.status(404).send('Resource not located')
-        }
-    })
-    .catch(err => {
-        console.log('Error in GET single pet route', err)
+        res.send({ pet: goalPet })
     })
 })
 
-//PUT '/:id' to edit pet data for one pet
-router.put('/:id', (req, res) => {
-    res.send('PUT route to edit pet data form')
 
+
+
+router.put('/:id', (req, res) => {
+    db.User.findById(req.user._id)
+    .then(user => {
+        let thisPet = null
+        for (let i = 0; i < user.pets.length; i++) {
+            if (user.pets[i]._id == req.params.id) {
+                thisPet = user.pets[i]
+            }
+            console.log(thisPet)
+            thisPet.name = req.body.name
+            thisPet.typeOfAnimal = req.body.typeOfAnimal
+            thisPet.breed = req.body.breed
+        }
+
+        user.save()
+        res.send({ pet: thisPet})
+    })
+    .catch((err) => {
+        console.log('error', err) 
+    })
 })
 
 //POST '/' create new pet from form (include image)
-// res.send('POST route to add "new pet from" to db')
 router.post('/', (req, res) => {
     console.log(req.user)
     db.User.findById(req.user._id)
@@ -102,10 +139,8 @@ router.delete('/:id', (req, res) => {
         .catch(err => {
             console.log('Error when deleting pet')
         })
-    // res.send('DELETE route for removing a pet from a user')
     })
 })
-//Ex
 
 // // MEDICAL SUMMARY ROUTES
 
