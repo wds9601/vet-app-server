@@ -53,7 +53,7 @@ let userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 8,
-    maxlength: 100
+    maxlength: 32
   },
   profileUrl: String,
   pets: [petSchema],
