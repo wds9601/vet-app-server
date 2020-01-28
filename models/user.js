@@ -77,6 +77,11 @@ userSchema.set('toJSON', {
 })
 
 // Create a helper function to compare the password hashes
+userSchema.methods.isValidPassword = function (typedPassword) {
+  return bcrypt.compareSync(typedPassword, this.password)
+}
+
+// Create a helper function to compare the password hashes
 userSchema.pre('save', function (next) {
   if(!this.isModified()){
     // New, as opposed to modified
