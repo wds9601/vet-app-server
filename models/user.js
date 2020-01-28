@@ -30,7 +30,7 @@ const petSchema = new mongoose.Schema({
   },
   age: Number,
   sex: String,
-  image: String,
+  petImage: String,
   summary: summarySchema,
   treatment: treatmentSchema,
   vet: {type: mongoose.Schema.Types.ObjectId, ref: 'Vet'}
@@ -57,7 +57,7 @@ let userSchema = new mongoose.Schema({
   },
   profileUrl: String,
   pets: [petSchema],
-  summary: summarySchema,
+  summary: [{summarySchema}],
   treatment: [{treatmentSchema}]
 })
 
