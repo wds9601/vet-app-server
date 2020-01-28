@@ -35,7 +35,7 @@ router.get('/:id', (req, res) => {
     // res.send('GET info on a single pet')
     db.User.findById(req.user._id)
     .then(user => {
-        let pet = user.pet._id
+        let pet = user.pets._id
         if(pet) {
             res.send(pet)
         }
