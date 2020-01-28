@@ -1,3 +1,4 @@
+ 
 // Add modules and dependencies
 const mongoose = require ('mongoose')
 const express = require('express')
@@ -7,6 +8,8 @@ let db = require('../models')
 
 // // PETS
 //GET all pets '/' assoc with one user 
+
+//WORKS-TUESDAY
 router.get('/', (req, res) => {
     // res.send('GET all pets from a user')
     // console.log('Line 12', req.user.id, req.user._id)
@@ -51,6 +54,7 @@ router.get('/:id', (req, res) => {
 //PUT '/:id' to edit pet data for one pet
 router.put('/:id', (req, res) => {
     res.send('PUT route to edit pet data form')
+
 })
 
 //POST '/' create new pet from form (include image)
@@ -89,8 +93,24 @@ router.post('/', (req, res) => {
 
 //DELETE '/:id' delete a pet from a user's pet list
 router.delete('/:id', (req, res) => {
-    res.send('DELETE route for removing a pet from a user')
+    console.log(req.user)
+    db.User.findById(req.user._id)
+    .then(User => {
+        console.log(User)
+        User.pets.splice({
+            _id: req.user.pets._id
+        })
+        User.save()
+        .then(() => {
+            res.status(204).send({pets: User.pets})
+        })
+        .catch(err => {
+            console.log('Error when deleting pet')
+        })
+    // res.send('DELETE route for removing a pet from a user')
+    })
 })
+//Ex
 
 // // MEDICAL SUMMARY ROUTES
 
@@ -109,6 +129,8 @@ router.get('/:id/medical', (req, res) => {
         res.render('error')
     })
 })
+
+
 
 // GET - pet's individual medical record details
 
