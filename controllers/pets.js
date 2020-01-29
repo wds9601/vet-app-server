@@ -5,6 +5,7 @@
 
 let router = require('express').Router()
 let db = require('../models')
+let jwt = require('jsonwebtoken')
 
 // // PETS
 //GET all pets '/' assoc with one user 
@@ -48,9 +49,12 @@ router.post('/', (req, res) => {
                     treatmentDate: req.body.treatmentDate
                 }
             })
-            User.save()
+            return User.save()
         .then(() => {
-            res.status(200).send({pets: User.pets})
+            let token = jwt.sign(User.toJSON(), process.env.JWT_SECRET, {
+                expiresIn: 60 * 60 * 8 // 60 seconds
+            })
+            res.send({token})
         })
         .catch(err => {
             console.log(err, 'Error')
