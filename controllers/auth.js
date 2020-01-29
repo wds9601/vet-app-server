@@ -76,6 +76,7 @@ router.get('/profile', (req, res) => {
   // WARNING: If you update the user info those changes will not be reflected here
   // To avoid this, reissue a token when you update user data
   res.send({ message: 'Secret message for logged in people ONLY!' })
+
 })
 
 module.exports = router

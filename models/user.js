@@ -61,10 +61,10 @@ let userSchema = new mongoose.Schema({
   treatment: [{treatmentSchema}]
 })
 
-
 // Ensure that password doesn't get sent with the rest of the data
 userSchema.set('toJSON', {
   transform: (doc, user) => {
+    console.log(user)
     delete user.password
     delete user.__v
     return user
