@@ -1,7 +1,7 @@
  
 // // Add modules and dependencies
-// const mongoose = require ('mongoose')
-// const express = require('express')
+const mongoose = require ('mongoose')
+const express = require('express')
 
 let router = require('express').Router()
 let db = require('../models')
