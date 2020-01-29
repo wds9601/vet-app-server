@@ -61,15 +61,17 @@ let userSchema = new mongoose.Schema({
   treatment: [{treatmentSchema}]
 })
 
-// Use bcrpty to hash password if a new password
+// Create a helper function to compare the password hashes
 userSchema.pre('save', function (next) {
-  if(!this.isModified()){
+  console.log('Pre save function. mod:', this.isModified(), "isNew:", this.isNew)
+  if(this.isNew){
+    console.log('It was new')
     // New, as opposed to modified
     this.password = bcrypt.hashSync(this.password, 12)
   }
+  console.log('Passed the if statement')
   next()
 })
-
 // Ensure that password doesn't get sent with the rest of the data
 userSchema.set('toJSON', {
   transform: (doc, user) => {
