@@ -71,21 +71,12 @@ router.post('/signup', (req, res) => {
 router.get('/profile', (req, res) => {
   // The user is logged in, so req.user should have data!
   // TODO: Anything you want here!
-  console.log(req.user._id)
-  db.User.findById(req.user._id)
-  .then(User => {
-    console.log('This is whole USER object', User)
-    console.log(User.pets[0].name)
-    res.send({User})
-  })
-  .catch(err => {
-    console.log('Error in profile get', err)
-  })
-  
+      res.send()
   // NOTE: This is the user data from the time the token was issued
   // WARNING: If you update the user info those changes will not be reflected here
   // To avoid this, reissue a token when you update user data
   res.send({ message: 'Secret message for logged in people ONLY!' })
+
 })
 
 module.exports = router

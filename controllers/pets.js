@@ -29,35 +29,47 @@ router.get('/', (req, res) => {
     })
 })
 
-//GET '/:id' to view single pet by id
 router.get('/:id', (req, res) => {
-    // res.send('GET info on a single pet')
-    console.log('in the get 1 route')
     db.User.findById(req.user._id)
     .then(user => {
-        let pet = user.pets._id
-        if(pet) {
-            res.send(pet)
-            console.log(pet)
+
+        //Null = falsey, on front end  --> if (goalPet)
+        let goalPet = null
+        for (let i = 0; i < user.pets.length; i++) {
+            if (user.pets[i]._id == req.params.id) {
+                goalPet = user.pets[i]
+            }
         }
-        else {
-            res.status(404).send('Resource not located')
-            console.log('No pets here baby')
-        }
-    })
-    .catch(err => {
-        console.log('Error in GET single pet route', err)
+        res.send({ pet: goalPet })
     })
 })
 
-//PUT '/:id' to edit pet data for one pet
-router.put('/:id', (req, res) => {
-    res.send('PUT route to edit pet data form')
 
+router.put('/:id', (req, res) => {
+    db.User.findById(req.user._id)
+    .then(user => {
+        let thisPet = null
+        for (let i = 0; i < user.pets.length; i++) {
+            if (user.pets[i]._id == req.params.id) {
+                thisPet = user.pets[i]
+            }
+            thisPet.name = req.body.name
+            thisPet.typeOfAnimal = req.body.typeOfAnimal
+            thisPet.breed = req.body.breed
+            thisPet.age = req.body.age
+            thisPet.sex = req.body.sex
+            thisPet.petImage = req.body.petImage
+        }
+
+        user.save()
+        res.send({ pet: thisPet})
+    })
+    .catch((err) => {
+        console.log('error', err) 
+    })
 })
 
 //POST '/' create new pet from form (include image)
-// res.send('POST route to add "new pet from" to db')
 router.post('/', (req, res) => {
     console.log(req.user)
     db.User.findById(req.user._id)
@@ -82,7 +94,7 @@ router.post('/', (req, res) => {
             })
             User.save()
         .then(() => {
-            res.send({pets: User.pets})
+            res.status(200).send({pets: User.pets})
         })
         .catch(err => {
             console.log(err, 'Error')
@@ -107,50 +119,18 @@ router.delete('/:id', (req, res) => {
         .catch(err => {
             console.log('Error when deleting pet')
         })
-    // res.send('DELETE route for removing a pet from a user')
     })
 })
-//Ex
 
 // // MEDICAL SUMMARY ROUTES
-
+//WORKING -TUESDAY
 // GET - All medical records for single pet
-
 router.get('/:id/medical', (req, res) => {
     db.User.findById(req.user._id)
-    .then(summary => {
-        console.log('line 103', req.user)
+    .then(User => {
         let petSummary = User.pets.summary
         console.log({pets: User.pets.summary})
         res.send(petSummary)
-    })
-    .catch(err => {
-        console.log('error', err)
-        res.render('error')
-    })
-})
-
-
-
-// GET - pet's individual medical record details
-
-router.get('/:id/medical/:id', (req, res) => {
-    res.send('Display details of one medical record')
-})
-
-
-// PUT - edit pet's indvidual medical record
-router.put('/:id/medical/:id', (req, res) => {
-    db.User.findOneAndUpdate({
-        _id: req.params.id
-    }, 
-        req.body,
-    {
-        new: true
-    })
-    .then(updatedSummary => {
-        console.log(updatedSummary)
-        res.redirect('/:id/medical/:id')
     })
     .catch(err => {
         console.log('error', err)
@@ -167,11 +147,6 @@ router.get('/:id/treatment', (req, res) => {
         console.log(User.pet.treatment)
         res.send(treatment)
     })
-})
-
-// GET - display form for editing single pet treatment details
-router.get('/:id/treatment/new', (req, res) => {
-    res.send('Display form for editing one pet treatment')
 })
 
 // POST - create new pet treatment record

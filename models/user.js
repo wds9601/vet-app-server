@@ -61,15 +61,10 @@ let userSchema = new mongoose.Schema({
   treatment: [{treatmentSchema}]
 })
 
-// Use bcrypt to hash password
-userSchema.pre('save', function(next) {
-  this.password = bcrypt.hashSync(this.password, 12) //async function. not arrow function so must use 'this' to reference the instance
-  next()
-})
-
 // Ensure that password doesn't get sent with the rest of the data
 userSchema.set('toJSON', {
   transform: (doc, user) => {
+    console.log(user)
     delete user.password
     delete user.__v
     return user
