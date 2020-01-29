@@ -21,6 +21,7 @@ router.get('/', (req, res) => {
         }
         let pets = user.pets
         res.send(pets)
+        console.log(pets)
     })
     .catch(err => {
         console.log('Error in GET ALL Pets route', err)
@@ -31,14 +32,17 @@ router.get('/', (req, res) => {
 //GET '/:id' to view single pet by id
 router.get('/:id', (req, res) => {
     // res.send('GET info on a single pet')
+    console.log('in the get 1 route')
     db.User.findById(req.user._id)
     .then(user => {
         let pet = user.pets._id
         if(pet) {
             res.send(pet)
+            console.log(pet)
         }
         else {
             res.status(404).send('Resource not located')
+            console.log('No pets here baby')
         }
     })
     .catch(err => {
@@ -58,7 +62,8 @@ router.post('/', (req, res) => {
     console.log(req.user)
     db.User.findById(req.user._id)
         .then(User => {
-            console.log(User)
+            console.log(`This is the user`, User)
+            console.log(`And here are his pets`, User.pets)
             User.pets.push({
                 name: req.body.name,
                 typeOfAnimal: req.body.typeOfAnimal,

@@ -16,7 +16,7 @@ router.post('/login', (req, res) => {
 
     // Good - they do exist.  Now check the password
     if(!user.isValidPassword(req.body.password)) {
-      return res.status(401).send({ message: 'Invalid password' })
+      return res.status(400).send({ message: 'Invalid password' })
     }
 
     //Good user - issue a token and send it
@@ -71,7 +71,17 @@ router.post('/signup', (req, res) => {
 router.get('/profile', (req, res) => {
   // The user is logged in, so req.user should have data!
   // TODO: Anything you want here!
-  res.send()
+  console.log(req.user._id)
+  db.User.findById(req.user._id)
+  .then(User => {
+    console.log('This is whole USER object', User)
+    console.log(User.pets[0].name)
+    res.send({User})
+  })
+  .catch(err => {
+    console.log('Error in profile get', err)
+  })
+  
   // NOTE: This is the user data from the time the token was issued
   // WARNING: If you update the user info those changes will not be reflected here
   // To avoid this, reissue a token when you update user data
