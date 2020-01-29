@@ -53,7 +53,7 @@ let userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 8,
-    maxlength: 32
+    maxlength: 69
   },
   profileUrl: String,
   pets: [petSchema],
@@ -64,8 +64,9 @@ let userSchema = new mongoose.Schema({
 // Create a helper function to compare the password hashes
 userSchema.pre('save', function (next) {
   console.log('Pre save function. mod:', this.isModified(), "isNew:", this.isNew)
+  console.log('length of password', this.password.length)
   if(this.isNew){
-    console.log('It was new')
+    console.log('It was new, HASH NOW')
     // New, as opposed to modified
     this.password = bcrypt.hashSync(this.password, 12)
   }
