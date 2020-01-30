@@ -26,7 +26,12 @@ app.use('/auth', expressJwt({
   ]
 }), require('./controllers/auth'))
 
-app.use('/pets', expressJwt({ 
+// app.use('/pets', expressJwt({ 
+//   secret: process.env.JWT_SECRET
+// }), require('./controllers/pets'))
+
+//NEW PETS
+app.use('/pets', expressJwt({
   secret: process.env.JWT_SECRET
 }), require('./controllers/pets'))
 

@@ -7,3 +7,4 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/pethealth', {
 })
 
 module.exports.User = require('./user')
+module.exports.Pet = require('./pet')

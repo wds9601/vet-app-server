@@ -1,253 +1,221 @@
- 
 // // Add modules and dependencies
 const mongoose = require ('mongoose')
 const express = require('express')
 
 let router = require('express').Router()
 let db = require('../models')
-let jwt = require('jsonwebtoken')
 
 // // PETS
-//GET all pets '/' assoc with one user 
+// GET all pets '/' assoc with one user 
 router.get('/', (req, res) => {
-    db.User.findById(req.user._id)
-    .then((user) => {
-        console.log('Line 15', user)
-        if (!user) {
-            return res.status(404).send({ message: 'No User' })
+    db.Pet.find({ owner: req.user._id})
+    .then((pets) => {
+        if (!pets) {
+            console.log('NO PETS IF')
+            return res.status(404).send({ message: 'No Pets' })
         }
-        let pets = user.pets
-        res.send(pets)
-        console.log(pets)
+        else {
+        console.log('IF PETS', pets)
+        res.send({pets})
+        }
+
     })
     .catch(err => {
         console.log('Error in GET ALL Pets route', err)
-        res.status(503)
+        res.status(503).send({message: 'Error finding pets'})
     })
 })
 
 //POST '/' create new pet from form (include image)
 router.post('/', (req, res) => {
-    console.log(req.user)
-    db.User.findById(req.user._id)
-        .then(User => {
-            console.log(`This is the user`, User)
-            console.log(`And here are his pets`, User.pets)
-            User.pets.push({
-                name: req.body.name,
-                typeOfAnimal: req.body.typeOfAnimal,
-                breed: req.body.breed,
-                age: req.body.age,
-                sex: req.body.sex,
-                petImage: req.body.image,
-                summary: {
-                    rabiesShot: req.body.rabiesShot,
-                    microchip: req.body.microchip
-                },
-                treatment: {
-                    treatment: req.body.treatment,
-                    treatmentDate: req.body.treatmentDate
-                }
-            })
-            return User.save()
-        .then(() => {
-            let token = jwt.sign(User.toJSON(), process.env.JWT_SECRET, {
-                expiresIn: 60 * 60 * 8 // 60 seconds
-            })
-            res.send({token})
-        })
-        .catch(err => {
-            console.log(err, 'Error')
-        })
-    })
-})
-
-router.get('/:id', (req, res) => {
-    db.User.findById(req.user._id)
-    .then(user => {
-
-        //Null = falsey, on front end  --> if (goalPet)
-        let goalPet = null
-        for (let i = 0; i < user.pets.length; i++) {
-            if (user.pets[i]._id == req.params.id) {
-                goalPet = user.pets[i]
-            }
+    console.log(req.user, req.body)
+    db.Pet.create({
+        owner: req.user._id,
+        name: req.body.name,
+        typeOfAnimal: req.body.typeOfAnimal,
+        breed: req.body.breed,
+        age: req.body.age,
+        sex: req.body.sex,
+        petImage: req.body.image,
+        summary: {
+            rabiesShot: req.body.rabiesShot,
+            microchip: req.body.microchip
+        },
+        treatment: {
+            treatment: req.body.treatment,
+            treatmentDate: req.body.treatmentDate
         }
-        res.send({ pet: goalPet })
+    })
+    .then(newPet => {
+        res.send({ newPet })
+    })
+    .catch(err => {
+        console.log(err, 'Error')
+    })
+})
+
+router.get('/:petId', (req, res) => {
+    db.Pet.findById(req.params.petId)
+    .then(pet => {
+        console.log('Found pet:', pet)
+        res.send({ pet })
+    })
+    .catch(err => {
+        console.log('Error', err)
+        res.status(500).send({ message: 'Server error' })
     })
 })
 
 
-router.put('/:id', (req, res) => {
-    db.User.findById(req.user._id)
-    .then(user => {
-        let thisPet = null
-        for (let i = 0; i < user.pets.length; i++) {
-            if (user.pets[i]._id == req.params.id) {
-                thisPet = user.pets[i]
-            }
+router.put('/:petId', (req, res) => {
+    db.Pet.findById(req.params.petId)
+    .then(thisPet => {
+        console.log("Found thisPet:", thisPet)
+        if (thisPet.owner == req.user._id) {
             thisPet.name = req.body.name
             thisPet.typeOfAnimal = req.body.typeOfAnimal
             thisPet.breed = req.body.breed
             thisPet.age = req.body.age
             thisPet.sex = req.body.sex
             thisPet.petImage = req.body.petImage
+            
+            thisPet.save().then(() => {
+                console.log('Pet info saved')
+                res.send({ thisPet })
+            })
         }
-
-        user.save()
-        res.send({ pet: thisPet})
+        else {
+            res.status(401).send({ message: 'NOT OWNER' })
+        }
     })
     .catch((err) => {
         console.log('error', err) 
+        res.send({ message: 'Server error' })
     })
 })
 
 
 //DELETE '/:id' delete a pet from a user's pet list
-router.delete('/:id', (req, res) => {
-    console.log(req.user)
-    db.User.findById(req.user._id)
-    .then(User => {
-        console.log(User)
-        User.pets.splice({
-            _id: req.user.pets._id
-        })
-        User.save()
-        .then(() => {
-            res.status(204).send({pets: User.pets})
-        })
-        .catch(err => {
-            console.log('Error when deleting pet')
-        })
+router.delete('/:petId', (req, res) => {
+    db.Pet.remove({ owner: req.user._id, _id: req.params.petId})
+    .then(() => {
+        console.log('success?')
+        res.send({message: 'Success'})
+    })
+    .catch(err => {
+        console.log('Error when deleting pet')
+        res.status(500).send({ message: 'Server error' })
     })
 })
 
 // // MEDICAL SUMMARY ROUTES
-//WORKING -TUESDAY
 // GET - All medical records for single pet
-router.get('/:id/medical', (req, res) => {
-    db.User.findById(req.user._id)
-    .then(user => {
-        let thisPet = null;
-        for (let i = 0; i < user.pets.length; i++) {
-            if (user.pets[i]._id == req.params.id) {
-                thisPet = user.pets[i]
-            }
-        }
+router.get('/:petId/medical', (req, res) => {
+    db.Pet.findById(req.params.petId)
+    .then(thisPet => {
+        console.log('Summary raw', thisPet.summary)
+        console.log('Rabies Shot', thisPet.summary.rabiesShot)
         res.send({summary: thisPet.summary})
     })
     .catch(err => {
-        console.log('error', err)
-    })
-})
-router.put('/:id/medical', (req, res) => {
-    db.User.findById(req.user._id)
-    .then(User => {
-        let thisPet = null
-        for (let i = 0; i< User.pets.length; i++) {
-            if (User.pets[i]._id == req.params.id) {
-                thisPet = User.pets[i]
-            }
-        }
-        console.log("LINE 152", thisPet)
-        thisPet.summary.rabiesShot = req.body.rabiesShot,
-        thisPet.summary.microchip = req.body.microchip
-        User.save()
-        .then(() => {
-            res.status(200).send({summary: thisPet.summary })
-        })
-        .catch((err) => {
-            console.log('Error in PUT medical', err)
-        })
+        console.log('Error when deleting pet', err)
+        res.status(500).send({ message: 'Server error' })
     })
 })
 
-
-router.post('/:id/medical', (req, res) => {
-    db.User.findById(req.user._id)
-    .then(User => {
-        let thisPet = null
-        for (let i = 0; i < User.pets.length; i++) {
-            if (User.pets[i]._id == req.params.id) {
-                thisPet = User.pets[i]
+// Change the medical info of the pet
+router.put('/:petId/medical', (req, res) => {
+    db.Pet.findById(req.params.petId)
+    .then(thisPet => {
+        if (thisPet.owner == req.user._id) {
+            console.log('in if', thisPet.summary)
+            if (!thisPet.summary) {
+                thisPet.summary = {}
             }
+            thisPet.summary.rabiesShot = req.body.rabiesShot
+            thisPet.summary.microchip = req.body.microchip
+            thisPet.save().then(() => {
+                res.send({ summary: thisPet.summary })
+            })
+            .catch(err => {
+                console.log('bad save', err)
+            })
         }
-        thisPet.summary.rabiesShot = req.body.rabiesShot
-        thisPet.summary.microchip = req.body.microchip
-        User.save()
-        .then(() => {
-            res.status(200).send({summary: thisPet.summary})
-        })
-        .catch((err) => {
-            console.log('error in POST medical', err)
-        })
+        else {
+            res.status(400).send({ message: 'You are not the owner of the pet' })
+        }
+    })
+    .catch((err) => {
+        console.log('Error in PUT medical', err)
+        res.status(500).send({ message: 'Server error'})
     })
 })
 
 // // TREATMENT ROUTES
 // GET - All treatment details for a single pet
-router.get('/:id/treatment', (req, res) => {
-    db.User.findById(req.user._id)
-    .then(user => {
-        let thisPet = null
-        for (let i = 0; i < user.pets.length; i++) {
-            if (user.pets[i]._id == req.params.id) {
-                thisPet = user.pets[i]
-            }
-        }
-        
+router.get('/:petId/treatment', (req, res) => {
+    db.Pet.findById(req.params.petId)
+    .then(thisPet => {
         res.send({treatment: thisPet.treatment})
     })
     .catch((err) => {
         console.log('Error in GET treatment', err)
-    })
-})
-
-// POST - create new pet treatment record
-router.post('/:id/treatment', (req, res) => {
-    db.User.findById(req.user._id)
-    .then(User => {
-        let thisPet = null
-        for (let i = 0; i < User.pets.length; i++) {
-            if (User.pets[i]._id == req.params.id) {
-                thisPet = User.pets[i]
-            }
-        }
-        thisPet.treatment.treatment = req.body.treatment,
-        thisPet.treatment.treatmentDate = req.body.treatmentDate
-
-        User.save()
-        .then(() => {
-            res.status(200).send({pet: User.pets })
-        })
-        .catch((err) => {
-            console.log('error in POST treatment', err)
-        })
+        res.status(500).send({message: 'server error'})
     })
 })
 
 // PUT - edit a pet treatment record that already exists
-router.put('/:id/treatment', (req, res) => {
-    db.User.findById(req.user._id)
-    .then(User => {
-        let thisPet = null
-        for (let i = 0; i < user.pets.length; i++) {
-            if (user.pets[i]._id == req.params.id) {
-                thisPet = user.pets[i]
+router.put('/:petId/treatment', (req, res) => {
+    db.Pet.findById(req.params.petId)
+    .then(thisPet => {
+        console.log('Thispet', thisPet)
+        if (thisPet.owner == req.user._id) {
+            if (!thisPet.treatment) {
+                thisPet.treatment = {}
             }
+            thisPet.treatment.push({
+                treatment: req.body.treatment,
+                treatmentDate: req.body.treatmentDate,
+            })
+            thisPet.save().then(() => {
+                res.send({ treatment: thisPet.treatment })
+            })
         }
-        thisPet.treatment.treatment = req.body.treatment,
-        thisPet.treatment.treatmentDate = req.body.treatmentDate
-
-        User.save()
-        .then(() => {
-            res.status(200).send({ pet: User.pets })
+        else {
+            res.status(400).send({ message: 'Not the owner of this pet'})
+        }
         })
         .catch((err) => {
-            console.log('error in PUT treatment', err)
+            console.log('Error in PUT treatment', err)
+            res.status(500).send({ message: 'server error'})
         })
     })  
-})
 
+    router.put('/:petId/medical', (req, res) => {
+        db.Pet.findById(req.params.petId)
+        .then(thisPet => {
+            if (thisPet.owner == req.user._id) {
+                console.log('in if', thisPet.summary)
+                if (!thisPet.summary) {
+                    thisPet.summary = {}
+                }
+                thisPet.summary.rabiesShot = req.body.rabiesShot
+                thisPet.summary.microchip = req.body.microchip
+                thisPet.save().then(() => {
+                    res.send({ summary: thisPet.summary })
+                })
+                .catch(err => {
+                    console.log('bad save', err)
+                })
+            }
+            else {
+                res.status(400).send({ message: 'You are not the owner of the pet' })
+            }
+        })
+        .catch((err) => {
+            console.log('Error in PUT medical', err)
+            res.status(500).send({ message: 'Server error'})
+        })
+    })
 
 module.exports = router
