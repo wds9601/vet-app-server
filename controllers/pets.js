@@ -66,6 +66,22 @@ router.get('/:petId', (req, res) => {
     })
 })
 
+// POST - able to post a pet treatment
+// router.post('/:petId/treatment', (req, res) => {
+//     db.Pet.findOneAndUpdate({
+//         _id: req.params.id, 
+//     },
+//         req.body,
+//     {
+//         new: true
+//     })
+//     .then(newTreatment => {
+//         res.send(newTreatment)
+//     })
+//     .catch(err => {
+//         console.log('error', err)
+//     })
+// })
 
 router.put('/:petId', (req, res) => {
     db.Pet.findById(req.params.petId)
@@ -165,7 +181,7 @@ router.get('/:petId/treatment', (req, res) => {
 })
 
 // PUT - edit a pet treatment record that already exists
-router.put('/:petId/treatment', (req, res) => {
+router.post('/:petId/treatment', (req, res) => {
     db.Pet.findById(req.params.petId)
     .then(thisPet => {
         console.log('Thispet', thisPet)
