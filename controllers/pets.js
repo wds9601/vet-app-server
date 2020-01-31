@@ -16,7 +16,7 @@ router.get('/', (req, res) => {
         }
         else {
         console.log('IF PETS', pets)
-        res.send({pets})
+        res.status(200).send(pets)
         }
 
     })
@@ -36,7 +36,7 @@ router.post('/', (req, res) => {
         breed: req.body.breed,
         age: req.body.age,
         sex: req.body.sex,
-        petImage: req.body.image,
+        petImage: req.body.petImage,
         summary: {
             rabiesShot: req.body.rabiesShot,
             microchip: req.body.microchip
