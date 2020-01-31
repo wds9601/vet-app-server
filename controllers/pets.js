@@ -58,7 +58,7 @@ router.get('/:petId', (req, res) => {
     db.Pet.findById(req.params.petId)
     .then(pet => {
         console.log('Found pet:', pet)
-        res.send({ pet })
+        res.send( pet )
     })
     .catch(err => {
         console.log('Error', err)
