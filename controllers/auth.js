@@ -5,7 +5,6 @@ let router = require('express').Router()
 
 // POST /auth/login (find and validate user; send token)
 router.post('/login', (req, res) => {
-  console.log(req.body)
   // Find user
   db.User.findOne({ email: req.body.email })
   .then(user => {
@@ -33,7 +32,6 @@ router.post('/login', (req, res) => {
 
 // POST to /auth/signup (create user; generate token)
 router.post('/signup', (req, res) => {
-  console.log(req.body)
   //look up user and make sure not a duplicate
   db.User.findOne({
     email: req.body.email

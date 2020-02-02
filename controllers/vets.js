@@ -4,7 +4,6 @@ let router = require('express').Router()
 router.get('/', (req, res) => {
     db.Vet.find()
     .then(vets => {
-        console.log(vets)
         res.render('vets/index', { vets })
     })
     .catch(err => {

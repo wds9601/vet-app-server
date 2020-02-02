@@ -1,21 +1,16 @@
 // // Add modules and dependencies
-const mongoose = require ('mongoose')
-const express = require('express')
-
 let router = require('express').Router()
 let db = require('../models')
 
-// // PETS
+// PETS ROUTES
 // GET all pets '/' assoc with one user 
 router.get('/', (req, res) => {
     db.Pet.find({ owner: req.user._id})
     .then((pets) => {
         if (!pets) {
-            console.log('NO PETS IF')
             return res.status(404).send({ message: 'No Pets' })
         }
         else {
-        console.log('IF PETS', pets)
         res.status(200).send(pets)
         }
 
@@ -28,7 +23,6 @@ router.get('/', (req, res) => {
 
 //POST '/' create new pet from form (include image)
 router.post('/', (req, res) => {
-    console.log(req.user, req.body)
     db.Pet.create({
         owner: req.user._id,
         name: req.body.name,
@@ -54,6 +48,7 @@ router.post('/', (req, res) => {
     })
 })
 
+//GET single pet details
 router.get('/:petId', (req, res) => {
     db.Pet.findById(req.params.petId)
     .then(pet => {
@@ -124,13 +119,11 @@ router.delete('/:petId', (req, res) => {
     })
 })
 
-// // MEDICAL SUMMARY ROUTES
+// MEDICAL SUMMARY ROUTES
 // GET - All medical records for single pet
 router.get('/:petId/medical', (req, res) => {
     db.Pet.findById(req.params.petId)
     .then(thisPet => {
-        console.log('Summary raw', thisPet.summary)
-        console.log('Rabies Shot', thisPet.summary.rabiesShot)
         res.send({summary: thisPet.summary})
     })
     .catch(err => {
@@ -144,7 +137,6 @@ router.put('/:petId/medical', (req, res) => {
     db.Pet.findById(req.params.petId)
     .then(thisPet => {
         if (thisPet.owner == req.user._id) {
-            console.log('in if', thisPet.summary)
             if (!thisPet.summary) {
                 thisPet.summary = {}
             }
@@ -167,7 +159,7 @@ router.put('/:petId/medical', (req, res) => {
     })
 })
 
-// // TREATMENT ROUTES
+// TREATMENT ROUTES
 // GET - All treatment details for a single pet
 router.get('/:petId/treatment', (req, res) => {
     db.Pet.findById(req.params.petId)
@@ -207,31 +199,31 @@ router.post('/:petId/treatment', (req, res) => {
         })
     })  
 
-    router.put('/:petId/medical', (req, res) => {
-        db.Pet.findById(req.params.petId)
-        .then(thisPet => {
-            if (thisPet.owner == req.user._id) {
-                console.log('in if', thisPet.summary)
-                if (!thisPet.summary) {
-                    thisPet.summary = {}
-                }
-                thisPet.summary.rabiesShot = req.body.rabiesShot
-                thisPet.summary.microchip = req.body.microchip
-                thisPet.save().then(() => {
-                    res.send({ summary: thisPet.summary })
-                })
-                .catch(err => {
-                    console.log('bad save', err)
-                })
+// PUT - Edit medical record of a single pet
+router.put('/:petId/medical', (req, res) => {
+    db.Pet.findById(req.params.petId)
+    .then(thisPet => {
+        if (thisPet.owner == req.user._id) {
+            if (!thisPet.summary) {
+                thisPet.summary = {}
             }
-            else {
-                res.status(400).send({ message: 'You are not the owner of the pet' })
-            }
-        })
-        .catch((err) => {
-            console.log('Error in PUT medical', err)
-            res.status(500).send({ message: 'Server error'})
-        })
+            thisPet.summary.rabiesShot = req.body.rabiesShot
+            thisPet.summary.microchip = req.body.microchip
+            thisPet.save().then(() => {
+                res.send({ summary: thisPet.summary })
+            })
+            .catch(err => {
+                console.log('bad save', err)
+            })
+        }
+        else {
+            res.status(400).send({ message: 'You are not the owner of the pet' })
+        }
     })
+    .catch((err) => {
+        console.log('Error in PUT medical', err)
+        res.status(500).send({ message: 'Server error'})
+    })
+})
 
 module.exports = router
