@@ -61,22 +61,7 @@ router.get('/:petId', (req, res) => {
     })
 })
 
-// POST - able to post a pet treatment
-// router.post('/:petId/treatment', (req, res) => {
-//     db.Pet.findOneAndUpdate({
-//         _id: req.params.id, 
-//     },
-//         req.body,
-//     {
-//         new: true
-//     })
-//     .then(newTreatment => {
-//         res.send(newTreatment)
-//     })
-//     .catch(err => {
-//         console.log('error', err)
-//     })
-// })
+
 
 router.put('/:petId', (req, res) => {
     db.Pet.findById(req.params.petId)
@@ -132,7 +117,7 @@ router.get('/:petId/medical', (req, res) => {
     })
 })
 
-// Change the medical info of the pet
+// PUT - Change the medical info of a single pet
 router.put('/:petId/medical', (req, res) => {
     db.Pet.findById(req.params.petId)
     .then(thisPet => {
@@ -197,33 +182,6 @@ router.post('/:petId/treatment', (req, res) => {
             console.log('Error in PUT treatment', err)
             res.status(500).send({ message: 'server error'})
         })
-    })  
-
-// PUT - Edit medical record of a single pet
-router.put('/:petId/medical', (req, res) => {
-    db.Pet.findById(req.params.petId)
-    .then(thisPet => {
-        if (thisPet.owner == req.user._id) {
-            if (!thisPet.summary) {
-                thisPet.summary = {}
-            }
-            thisPet.summary.rabiesShot = req.body.rabiesShot
-            thisPet.summary.microchip = req.body.microchip
-            thisPet.save().then(() => {
-                res.send({ summary: thisPet.summary })
-            })
-            .catch(err => {
-                console.log('bad save', err)
-            })
-        }
-        else {
-            res.status(400).send({ message: 'You are not the owner of the pet' })
-        }
     })
-    .catch((err) => {
-        console.log('Error in PUT medical', err)
-        res.status(500).send({ message: 'Server error'})
-    })
-})
 
 module.exports = router
